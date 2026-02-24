@@ -10,14 +10,46 @@ import SwiftUI
 struct HomeView: View {
     @State var Username: String
     var body: some View {
-        Text("Welcome back \(Username)")
-            .font(.largeTitle)
-        
-        
-        
-        
-        
-        Spacer()
+        NavigationStack{
+            VStack{
+                Text("Welcome back \(Username)")
+                    .font(.largeTitle)
+                Spacer()
+                HStack{
+                    NavigationLink {
+                        ListedItemsView()
+                    } label: {
+                        ZStack{
+                            Circle()
+                                .frame(width: 150)
+                            Text("See Offers")
+                                .foregroundStyle(.red)
+                                .font(.title2)
+                        }
+                    }
+                    
+                    
+                    NavigationLink {
+                        ListedItemsView()
+                    } label: {
+                        ZStack{
+                            Circle()
+                                .frame(width: 150)
+                            Text("See listed items")
+                                .foregroundStyle(.red)
+                                .font(.title2)
+                        }
+                    }
+
+
+                }
+                
+                
+                
+                
+                Spacer()
+            }
+        }
     }
 }
 
