@@ -8,11 +8,19 @@
 import SwiftUI
 
 struct HomeView: View {
+    @State var Username: String
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        Text("Welcome back \(Username)")
+            .font(.largeTitle)
+        
+        
+        
+        
+        
+        Spacer()
     }
 }
 
 #Preview {
-    HomeView()
+    HomeView(Username: "blob")
 }
