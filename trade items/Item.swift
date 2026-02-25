@@ -6,6 +6,13 @@
 //
 
 import Foundation
+import Firebase
+import FirebaseCore
+import FirebaseAuth
+import FirebaseDatabase
+
+
+
 
 enum ItemCategory: String {
     case clothing = "Clothing"
@@ -14,6 +21,7 @@ enum ItemCategory: String {
 }
 
 class Item {
+    var ref = Database.database().reference()
     var name: String
     var category: ItemCategory
     var estimatedValue: Double
@@ -23,4 +31,17 @@ class Item {
         self.category = category
         self.estimatedValue = estimatedValue
     }
+    //pull from FBase
+    init(dict:[String : Any]){
+        name = dict["name"] as! String
+        category = dict["category"] as! ItemCategory
+        estimatedValue = dict["estimatedValue"] as! Double
+    }
+    
+    func save(){
+        let dict = ["name":name, "category":category, "estimatedValue":estimatedValue] as [String : Any]
+        ref.child("Item").childByAutoId().setValue(dict)
+    }
+    
+    
 }
