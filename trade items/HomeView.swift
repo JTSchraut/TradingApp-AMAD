@@ -19,6 +19,9 @@ struct HomeView: View {
             VStack{
                 Text("Welcome back \(Username)")
                     .font(.largeTitle)
+                Button("sign out") {
+                    signOut()
+                }
                 Spacer()
                 HStack{
                     NavigationLink {
@@ -45,19 +48,10 @@ struct HomeView: View {
                                 .font(.title2)
                         }
                     }
-
-
                 }
-                
-                
-                
-                
                 Spacer()
             }
         }
-        .tint(.red)
-        
-        Spacer()
     }
     
     func signOut() {
