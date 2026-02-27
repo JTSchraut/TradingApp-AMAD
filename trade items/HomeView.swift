@@ -26,6 +26,19 @@ struct HomeView: View {
                     signOut()
                 }
                 Spacer()
+                
+                NavigationLink {
+                    ListItemView()
+                } label: {
+                    ZStack{
+                        Circle()
+                            .frame(width: 150)
+                        Text("Post Item")
+                            .foregroundStyle(.red)
+                            .font(.title2)
+                    }
+                }
+                
                 HStack{
                     NavigationLink {
                         ListedItemsView()

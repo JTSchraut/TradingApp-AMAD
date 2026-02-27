@@ -21,11 +21,12 @@ enum ItemCategory: String {
     
 }
 
-class Item {
+class Item: ObservableObject {
     var ref = Database.database().reference()
     var name: String
     var category: ItemCategory
     var estimatedValue: Double
+    var key = ""
     
     init(name: String, category: ItemCategory, estimatedValue: Double) {
         self.name = name
@@ -35,14 +36,36 @@ class Item {
     //pull from FBase
     init(dict:[String : Any]){
         name = dict["name"] as! String
-        category = dict["category"] as! ItemCategory
+        let categoryString = dict["category"] as? String ?? ""
+        category = ItemCategory(rawValue: categoryString) ?? .sports
         estimatedValue = dict["estimatedValue"] as! Double
     }
     
-    func save(){
-        let dict = ["name":name, "category":category, "estimatedValue":estimatedValue] as [String : Any]
-        ref.child("Item").childByAutoId().setValue(dict)
+    func toDict() -> [String: Any] {
+        return [
+            "name": name,
+            "category": category.rawValue,
+            "estimatedValue": estimatedValue
+        ]
     }
     
+    func save(){
+        guard let uid = Auth.auth().currentUser?.uid else { return }
+        
+        // this is so ugly but we need the layers
+        let newRef = ref.child("users").child(uid).child("items").childByAutoId()
+        key = newRef.key ?? ""
+        newRef.setValue(toDict())
+    }
     
+    func delete() {
+        guard let uid = Auth.auth().currentUser?.uid else { return }
+        ref.child("users").child(uid).child("items").child(key).removeValue()
+    }
+    
+    func update() {
+        guard let uid = Auth.auth().currentUser?.uid else { return }
+        
+        ref.child("users").child(uid).child("items").child(key).updateChildValues(toDict())
+    }
 }

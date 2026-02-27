@@ -11,31 +11,38 @@ struct ListItemView: View {
     
     @State var nameIN = ""
     @State var estValueIN = 0.0
-    @State var categoryIN = "sports"
+    @State var categoryIN: ItemCategory = .sports
     @State var alertON = false
+    
     var body: some View {
         Text("List Item")
             .font(.largeTitle)
         TextField("Enter name", text: $nameIN)
+        
             .frame(width: 100)
 //        TextField("Enter estimated value", text: $nameIN)
 //            .frame(width: 180)
         Spacer()
+        
         HStack{
             Spacer()
             Text("Estimated value: $\(estValueIN, specifier: "%.0f")")
             Stepper("", value: $estValueIN)
             Spacer()
         }
+        
         Slider(value: $estValueIN, in: 1...100, step: 1.0 ) {
             
         }
+        
         Spacer()
+        
         Text("Select category")
             .font(.title)
+        
         HStack{
             Button {
-                categoryIN = "technology"
+                categoryIN = .technology
             } label: {
                 ZStack{
                     Circle()
@@ -47,7 +54,7 @@ struct ListItemView: View {
             }
             
             Button {
-                categoryIN = "sports"
+                categoryIN = .sports
             } label: {
                 ZStack{
                     Circle()
@@ -59,7 +66,7 @@ struct ListItemView: View {
             }
             
             Button {
-                categoryIN = "clothing"
+                categoryIN = .clothing
             } label: {
                 ZStack{
                     Circle()
@@ -71,11 +78,15 @@ struct ListItemView: View {
             }
 
         }
+        
+        Text("Selected category: \(categoryIN)")
+        
         Spacer()
         Spacer()
         Spacer()
+        
         Button {
-            let tempItem = Item(name: nameIN, category: ItemCategory(rawValue: categoryIN) ?? ItemCategory(rawValue: "sports")!, estimatedValue: estValueIN)
+            let tempItem = Item(name: nameIN, category: categoryIN, estimatedValue: estValueIN)
             tempItem.save()
             alertON = true
         } label: {
@@ -90,8 +101,6 @@ struct ListItemView: View {
         .alert("Item listed", isPresented: $alertON) {
             
         }
-
-        
         
         Spacer()
         Spacer()
