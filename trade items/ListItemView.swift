@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import FirebaseAuth
 
 struct ListItemView: View {
     
@@ -86,7 +87,7 @@ struct ListItemView: View {
         Spacer()
         
         Button {
-            let tempItem = Item(name: nameIN, category: categoryIN, estimatedValue: estValueIN)
+            let tempItem = Item(name: nameIN, category: categoryIN, estimatedValue: estValueIN, email: (Auth.auth().currentUser?.email)!)
             tempItem.save()
             alertON = true
         } label: {

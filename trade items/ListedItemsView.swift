@@ -32,8 +32,7 @@ struct ListedItemsView: View {
             }
         }
         .onAppear {
-            // boolean prevents the observers from being created twice which
-            // would cause items to be duplicated
+            // boolean prevents the observers from being created twice which would cause items to be duplicated
             if !loadedFirebase {
                 loadedFirebase = true
                 firebaseStuff()

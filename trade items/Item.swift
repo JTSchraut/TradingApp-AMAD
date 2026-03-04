@@ -26,12 +26,14 @@ class Item: ObservableObject {
     var name: String
     var category: ItemCategory
     var estimatedValue: Double
+    var email: String
     var key = ""
     
-    init(name: String, category: ItemCategory, estimatedValue: Double) {
+    init(name: String, category: ItemCategory, estimatedValue: Double, email: String) {
         self.name = name
         self.category = category
         self.estimatedValue = estimatedValue
+        self.email = email
     }
     //pull from FBase
     init(dict:[String : Any]){
@@ -39,33 +41,35 @@ class Item: ObservableObject {
         let categoryString = dict["category"] as? String ?? ""
         category = ItemCategory(rawValue: categoryString) ?? .sports
         estimatedValue = dict["estimatedValue"] as! Double
+        email = dict["email"] as! String
     }
     
     func toDict() -> [String: Any] {
         return [
             "name": name,
             "category": category.rawValue,
-            "estimatedValue": estimatedValue
+            "estimatedValue": estimatedValue,
+            "email": email
         ]
     }
     
     func save(){
         guard let uid = Auth.auth().currentUser?.uid else { return }
         
-        // this is so ugly but we need the layers
-        let newRef = ref.child("users").child(uid).child("items").childByAutoId()
+        let newRef = ref.child("items").childByAutoId()
         key = newRef.key ?? ""
         newRef.setValue(toDict())
+        ref.child("users").child(uid).childByAutoId().setValue(key)
     }
     
     func delete() {
         guard let uid = Auth.auth().currentUser?.uid else { return }
-        ref.child("users").child(uid).child("items").child(key).removeValue()
+        ref.child("items").child(key).removeValue()
     }
     
     func update() {
         guard let uid = Auth.auth().currentUser?.uid else { return }
         
-        ref.child("users").child(uid).child("items").child(key).updateChildValues(toDict())
+        ref.child("items").child(key).updateChildValues(toDict())
     }
 }

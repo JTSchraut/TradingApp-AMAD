@@ -37,5 +37,5 @@ struct ItemView: View {
 }
 
 #Preview {
-    ItemView(item: Item(name: "Basketball", category: .sports, estimatedValue: 20))
+    ItemView(item: Item(name: "Basketball", category: .sports, estimatedValue: 20, email: "test@gmail.com"))
 }
