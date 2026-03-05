@@ -12,7 +12,7 @@ import FirebaseDatabase
 struct SearchView: View {
     @State var alertON = false
     @State var searchIN = ""
-    @State var estValueSearch = 1.0
+    @State var estValIN = 1.0
     @State var categoryIN = "sports"
     var body: some View {
         NavigationStack{
@@ -26,10 +26,10 @@ struct SearchView: View {
                 }
             Text("Filter by:")
             HStack{
-                Text("Estimated Value: $\(estValueSearch, specifier: "%.0f")")
-                Stepper("", value: $estValueSearch)
+                Text("Estimated Value: $\(estValIN, specifier: "%.0f")")
+                Stepper("", value: $estValIN)
             }
-            Slider(value: $estValueSearch, in: 1...100, step: 1.0 ) {_ in 
+            Slider(value: $estValIN, in: 1...100, step: 1.0 ) {_ in
                 
             }
                 
@@ -77,21 +77,12 @@ struct SearchView: View {
                     }
                 }
             }
-            
-            
-            
-            
-            
-            
+                
             Spacer()
             Spacer()
             Spacer()
             Button {
-                if estValueSearch < 1 {
-                    estValueSearch = 1
-                }
-                
-                
+                filter(name: searchIN, category: categoryIN, estVal: estValIN)
             } label: {
                 ZStack{
                     Circle()
@@ -108,12 +99,25 @@ struct SearchView: View {
             
         }
     }
-    func filter(itemArray: [Item], name: String, category: String, estVal: Double){
+    
+    func filter(name: String, category: String, estVal: Double){
+        
+        var itemArray: [Item] = []
+        let ref = Database.database().reference().child("items")
+        ref.observeSingleEvent(of: .value, with: { snapshot in
+           for snap in snapshot.children.allObjects as! [DataSnapshot] {
+               let key = snap.key
+               if let dict = snap.value as? [String: Any] {
+                   itemArray.append(Item(dict: dict))
+               }
+           }
+        })
         
         var arrayOUT: [Item] = []
         for i in 0..<itemArray.count {
             if itemArray[i].name.contains(name) && category == itemArray[i].category.rawValue && abs(itemArray[i].estimatedValue - estVal) < 10.0 {
                 arrayOUT.append(itemArray[i])
+                print(itemArray[i].name)
             }
         }
     }
