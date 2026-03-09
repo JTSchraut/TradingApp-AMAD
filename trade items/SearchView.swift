@@ -13,7 +13,8 @@ struct SearchView: View {
     @State var alertON = false
     @State var searchIN = ""
     @State var estValIN = 1.0
-    @State var categoryIN = "sports"
+    @State var categoryIN = "Sports"
+    @State var allItems: [Item] = []
     var body: some View {
         NavigationStack{
             
@@ -39,7 +40,7 @@ struct SearchView: View {
             Text("Current: \(categoryIN)")
             ScrollView {
                 Button {
-                    categoryIN = "sports"
+                    categoryIN = "Sports"
                 } label: {
                     ZStack{
                         RoundedRectangle(cornerSize: CGSize(width: 10.0, height: 15.0))
@@ -52,7 +53,7 @@ struct SearchView: View {
                 }
                 
                 Button {
-                    categoryIN = "technology"
+                    categoryIN = "Technology"
                 } label: {
                     ZStack{
                         RoundedRectangle(cornerSize: CGSize(width: 10.0, height: 15.0))
@@ -65,7 +66,7 @@ struct SearchView: View {
                 }
                 
                 Button {
-                    categoryIN = "clothing"
+                    categoryIN = "Clothing"
                 } label: {
                     ZStack{
                         RoundedRectangle(cornerSize: CGSize(width: 10.0, height: 15.0))
@@ -81,8 +82,8 @@ struct SearchView: View {
             Spacer()
             Spacer()
             Spacer()
-            Button {
-                filter(name: searchIN, category: categoryIN, estVal: estValIN)
+            NavigationLink {
+                FilteredItemsView(items: filter(name: searchIN, category: categoryIN, estVal: estValIN))
             } label: {
                 ZStack{
                     Circle()
@@ -95,31 +96,47 @@ struct SearchView: View {
             
             Spacer()
         }
+        .onAppear() {
+            loadItems()
+        }
         .alert("Invalid search parameters", isPresented: $alertON) {
             
         }
     }
     
-    func filter(name: String, category: String, estVal: Double){
-        
-        var itemArray: [Item] = []
+    func loadItems() {
         let ref = Database.database().reference().child("items")
-        ref.observeSingleEvent(of: .value, with: { snapshot in
-           for snap in snapshot.children.allObjects as! [DataSnapshot] {
-               let key = snap.key
-               if let dict = snap.value as? [String: Any] {
-                   itemArray.append(Item(dict: dict))
-               }
-           }
-        })
-        
-        var arrayOUT: [Item] = []
-        for i in 0..<itemArray.count {
-            if itemArray[i].name.contains(name) && category == itemArray[i].category.rawValue && abs(itemArray[i].estimatedValue - estVal) < 10.0 {
-                arrayOUT.append(itemArray[i])
-                print(itemArray[i].name)
+        guard let email = Auth.auth().currentUser?.email else {
+            return
+        }
+
+        ref.observeSingleEvent(of: .value) { snapshot in
+            allItems = []
+
+            for snap in snapshot.children.allObjects as! [DataSnapshot] {
+                if let dict = snap.value as? [String: Any] {
+                    if dict["email"] as! String == email {
+                        continue
+                    }
+                    
+                    let item = Item(dict: dict)
+                    allItems.append(item)
+                    print(allItems)
+                }
             }
         }
+    }
+    
+    func filter(name: String, category: String, estVal: Double) -> [Item] {
+        var arrayOUT: [Item] = []
+        for item in allItems {
+            if (name == "" || item.name.lowercased().contains(name.lowercased())) &&
+               category == item.category.rawValue &&
+               abs(item.estimatedValue - estVal) < 10 {
+                arrayOUT.append(item)
+            }
+        }
+        return arrayOUT
     }
 }
 

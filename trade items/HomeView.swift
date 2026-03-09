@@ -21,7 +21,7 @@ struct HomeView: View {
                 
                 Text("Welcome back \(user?.email ?? "uh oh")")
                     .font(.largeTitle)
-                Text("Id: \(user?.uid ?? "uh oh")")
+                // Text("Id: \(user?.uid ?? "uh oh")")
                 Button("sign out") {
                     signOut()
                 }
@@ -41,7 +41,7 @@ struct HomeView: View {
                     }
                     
                     NavigationLink {
-                        FindItemView()
+                        SearchView()
                     } label: {
                         ZStack {
                             Circle()
