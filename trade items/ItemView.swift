@@ -21,11 +21,16 @@ struct ItemView: View {
                 Spacer()
                 Text("\(item.name)")
                         .font(.title)
+                        
                 HStack {
                     Text("\(item.category.rawValue)")
+                        .font(.title2)
+                        
                     if item.estimatedValue != 0 {
                         Spacer()
-                        Text("$\(item.estimatedValue, specifier: "%.2f")")
+                        Text("$\(item.estimatedValue, specifier: "%.0f")")
+                            .font(.title2)
+                            
                     }
                 }
                 .frame(maxWidth: screenWidth * 0.4, maxHeight: screenWidth * 0.4)

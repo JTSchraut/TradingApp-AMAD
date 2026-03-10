@@ -17,20 +17,23 @@ struct ListedItemsView: View {
     @State var loadedFirebase = false
     
     var body: some View {
-        VStack {
-            Text("Your Listed Items:")
-                .font(.largeTitle)
-            
-            List(items, id: \.key) { item in
-                ItemView(item: item)
-                    .swipeActions {
-                        Button("Delete") {
-                            item.delete()
+        
+            VStack {
+                Text("Your Listed Items:")
+                    .font(.largeTitle)
+                
+                List(items, id: \.key) { item in
+                    ItemView(item: item)
+                        .swipeActions {
+                            Button("Delete") {
+                                item.delete()
+                            }
+                            .tint(.red)
                         }
-                        .tint(.red)
-                    }
+                }
+                
             }
-        }
+        
         .onAppear {
             // boolean prevents the observers from being created twice which would cause items to be duplicated
             if !loadedFirebase {
