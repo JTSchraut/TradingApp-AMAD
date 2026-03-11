@@ -15,6 +15,7 @@ struct SearchView: View {
     @State var estValIN = 1.0
     @State var categoryIN = "Sports"
     @State var allItems: [Item] = []
+    @State var extraSearch = false
     var body: some View {
         NavigationStack{
             
@@ -25,6 +26,9 @@ struct SearchView: View {
                     RoundedRectangle(cornerSize: .zero)
                         .foregroundStyle(.teal)
                 }
+            Toggle(isOn: $extraSearch) {
+                Text("Extra search parameters:")
+            }
             Text("Filter by:")
             HStack{
                 Text("Estimated Value: $\(estValIN, specifier: "%.0f")")
@@ -99,7 +103,7 @@ struct SearchView: View {
         .onAppear() {
             loadItems()
         }
-        .alert("Invalid search parameters", isPresented: $alertON) {
+        .alert("Invalid search parameters:", isPresented: $alertON) {
             
         }
     }
@@ -126,17 +130,38 @@ struct SearchView: View {
             }
         }
     }
-    
-    func filter(name: String, category: String, estVal: Double) -> [Item] {
+    func filterName(name: String)->[Item]{
         var arrayOUT: [Item] = []
         for item in allItems {
-            if (name == "" || item.name.lowercased().contains(name.lowercased())) &&
-               category == item.category.rawValue &&
-               abs(item.estimatedValue - estVal) < 10 {
+            if (name == "" || item.name.lowercased().contains(name.lowercased())){
                 arrayOUT.append(item)
             }
         }
         return arrayOUT
+    }
+    
+    
+    func filter(name: String, category: String, estVal: Double) -> [Item] {
+        var arrayOUT: [Item] = []
+        if extraSearch {
+            for item in allItems {
+                if (name == "" || item.name.lowercased().contains(name.lowercased())) &&
+                   category == item.category.rawValue &&
+                   abs(item.estimatedValue - estVal) < 10 {
+                    arrayOUT.append(item)
+                }
+            }
+            return arrayOUT
+        } else {
+            var arrayOUT: [Item] = []
+            for item in allItems {
+                if (name == "" || item.name.lowercased().contains(name.lowercased())){
+                    arrayOUT.append(item)
+                }
+            }
+            return arrayOUT
+        }
+        
     }
 }
 
