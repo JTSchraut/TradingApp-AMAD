@@ -7,37 +7,33 @@
 import SwiftUI
 
 struct OfferView: View {
-    var offerIN : Offer
+    @State var offerIN : Offer
     var body: some View {
-        VStack{
-            Text("Offer details")
-                .font(.largeTitle)
-            Spacer()
-            
+        NavigationStack{
+            VStack{
+                Text("Offer details")
+                    .font(.largeTitle)
                 Spacer()
-            HStack{
-                Text("You recieve:")
-                    .font(.title2)
-                NavigationLink(destination: ItemView(item: offerIN.itemIN)) {
-                    Circle()
-                        .frame(width: 100)
-                }
-            }
-            Spacer()
-            HStack{
                 
+                
+                HStack{
+                    Text("You recieve:")
+                        .font(.title2)
+                    ItemView(item: offerIN.itemIN)
+                }
+                
+                Spacer()
+                HStack{
+                    
                     Text("You lose:")
                         .font(.title2)
-                NavigationLink(destination: ItemView(item: offerIN.itemOUT)) {
-                    Circle()
-                        .frame(width: 100)
+                    ItemView(item: offerIN.itemOUT)
+                    }
+                Spacer()
+                
+                Spacer()
                 }
-            }
-                Spacer()
-            
-             
-            Spacer()
-                Spacer()
+                
             
         }
         
@@ -45,5 +41,5 @@ struct OfferView: View {
 }
 
 #Preview {
-    OfferView(offerIN: Offer(itemIN: Item(name: "slop", category: ItemCategory(rawValue: "Sports")!, estimatedValue: 0.0, email: "oogabooga"), itemOUT: Item(name: "Gloop", category: ItemCategory(rawValue: "Technology")!, estimatedValue: 10.0, email: "blipblop")))
+    OfferView(offerIN: Offer(itemIN: Item(name: "slop", category: ItemCategory(rawValue: "Sports")!, estimatedValue: 1.0, email: "oogabooga"), itemOUT: Item(name: "Gloop", category: ItemCategory(rawValue: "Technology")!, estimatedValue: 10.0, email: "blipblop")))
 }
