@@ -51,41 +51,53 @@ struct OffersView: View {
     
     func loadOffers() {
         
+        print("loading")
+        
         loaded = true
         
-        guard let myEmail = Auth.auth().currentUser?.email else { return }
+        guard let myEmail = Auth.auth().currentUser?.email else {
+            print("couldnt get email")
+            return
+        }
         
         ref.child("offers").observe(.childAdded) { snapshot in
-            
-            guard let dict = snapshot.value as? [String:Any] else { return }
-            
-            var itemIN: Item
-            var itemOUT: Item
-            guard let offerIN = dict["offerIN"] as? String,
-                  let offerOUT = dict["offerOUT"] as? String else { return }
-            
-            ref.child("items").child(offerIN).observeSingleEvent(of: .value) { snapIN in
-                
-                guard let dictIN = snapIN.value as? [String:Any] else { return }
-                
-                itemIN = Item(dict: dictIN)
-                itemIN.key = offerIN
-                
-                if itemIN.email != myEmail { return }
+            guard let dict = snapshot.value as? [String:Any],
+                  let offerIN = dict["offerIN"] as? String,
+                  let offerOUT = dict["offerOut"] as? String else {
+                print("couldnt make starter dict")
+                return
             }
-            
-            ref.child("items").child(offerOUT).observeSingleEvent(of: .value) { snapOUT in
-                
-                guard let dictOUT = snapOUT.value as? [String:Any] else { return }
-                
-                itemOUT = Item(dict: dictOUT)
-                itemOUT.key = offerOUT
-                
-                let offer = Offer(itemIN: itemIN, itemOUT: itemOUT)
-                
-                offers.append(offer)
+
+            ref.child("items").child(offerIN).observeSingleEvent(of: .value) { snapIN in
+                guard let dictIN = snapIN.value as? [String:Any] else {
+                    print("couldnt make dictIN")
+                    return
+                }
+
+                var itemIN = Item(dict: dictIN)
+                itemIN.key = offerIN
+
+                if itemIN.email != myEmail {
+                    print("Did not use email: \(itemIN.email) for \(itemIN.name)")
+                    return
+                }
+
+                ref.child("items").child(offerOUT).observeSingleEvent(of: .value) { snapOUT in
+                    guard let dictOUT = snapOUT.value as? [String:Any] else { return }
+
+                    var itemOUT = Item(dict: dictOUT)
+                    itemOUT.key = offerOUT
+
+                    let offer = Offer(offerIN: itemIN, offerOUT: itemOUT)
+
+                    DispatchQueue.main.async {
+                        offers.append(offer)
+                    }
+                }
             }
         }
+        
+        print("done loading")
     }
 }
 

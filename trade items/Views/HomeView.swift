@@ -48,6 +48,10 @@ struct HomeView: View {
                 Tab("All items", systemImage: "list.clipboard", value: 4) {
                     FindItemView()
                 }
+                
+                Tab("Offers", systemImage: "globe", value: 5) {
+                    OffersView()
+                }
             }
         }
     }
