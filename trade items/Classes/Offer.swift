@@ -6,24 +6,14 @@
 //
 
 import Foundation
-class Offer{
+class Offer {
     
-    var itemIN: Item
-    var itemOUT: Item
-    var valueGap = 0.0
+    var id: String = ""
+    var offerIN: Item
+    var offerOUT: Item
     
-    init(itemIN: Item, itemOUT: Item) {
-        self.itemIN = itemIN
-        self.itemOUT = itemOUT
-        self.valueGap = abs(itemOUT.estimatedValue - itemIN.estimatedValue)
+    init(offerIN: Item, offerOUT: Item) {
+        self.offerIN = offerIN
+        self.offerOUT = offerOUT
     }
-    
-    
-    
-    
-    
-    
-    
-    
-    
 }

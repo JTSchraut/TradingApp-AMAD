@@ -38,7 +38,7 @@ struct HomeView: View {
                 }
                 
                 Tab("hello world", systemImage: "house", value: 2) {
-                    HomeScreenView()
+                    OfferView()
                 }
                 
                 Tab("Search", systemImage: "magnifyingglass", value: 3) {
