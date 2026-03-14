@@ -33,11 +33,11 @@ struct HomeView: View {
                     ListedItemsView()
                 }
                 
-                Tab("Post", systemImage: "hare", value: 1) {
+                Tab("Post", systemImage: "document.on.clipboard", value: 1) {
                     ListItemView()
                 }
                 
-                Tab("hello world", systemImage: "house", value: 2) {
+                Tab("Send Offer", systemImage: "rectangle.portrait.and.arrow.right", value: 2) {
                     OfferView()
                 }
                 
@@ -49,7 +49,7 @@ struct HomeView: View {
                     FindItemView()
                 }
                 
-                Tab("Offers", systemImage: "globe", value: 5) {
+                Tab("Offers", systemImage: "square.and.arrow.down", value: 5) {
                     OffersView()
                 }
             }

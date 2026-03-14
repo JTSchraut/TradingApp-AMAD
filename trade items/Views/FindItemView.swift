@@ -40,7 +40,7 @@ struct FindItemView: View {
             guard let dict = snapshot.value as? [String: Any] else { return }
             if dict["email"] as? String == Auth.auth().currentUser?.email { return }
             
-            var item = Item(dict: dict)
+            let item = Item(dict: dict)
             item.key = snapshot.key
             items.append(item)
         }
@@ -53,7 +53,7 @@ struct FindItemView: View {
             guard let dict = snapshot.value as? [String: Any] else { return }
             guard let index = items.firstIndex(where: { $0.key == snapshot.key }) else { return }
             
-            var updatedItem = Item(dict: dict)
+            let updatedItem = Item(dict: dict)
             updatedItem.key = snapshot.key
             items[index] = updatedItem
         }

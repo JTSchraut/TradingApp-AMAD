@@ -39,6 +39,18 @@ struct OffersView: View {
                             ItemView(item: offer.offerIN)
                         }
                     }
+                    
+                    HStack {
+                        Button("Accept") {
+                            
+                        }
+                        
+                        Spacer()
+                        
+                        Button("Decline") {
+                            
+                        }
+                    }
                 }
             }
             .onAppear() {
@@ -74,7 +86,7 @@ struct OffersView: View {
                     return
                 }
 
-                var itemIN = Item(dict: dictIN)
+                let itemIN = Item(dict: dictIN)
                 itemIN.key = offerIN
 
                 if itemIN.email != myEmail {
@@ -85,7 +97,7 @@ struct OffersView: View {
                 ref.child("items").child(offerOUT).observeSingleEvent(of: .value) { snapOUT in
                     guard let dictOUT = snapOUT.value as? [String:Any] else { return }
 
-                    var itemOUT = Item(dict: dictOUT)
+                    let itemOUT = Item(dict: dictOUT)
                     itemOUT.key = offerOUT
 
                     let offer = Offer(offerIN: itemIN, offerOUT: itemOUT)
