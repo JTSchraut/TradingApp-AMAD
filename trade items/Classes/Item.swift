@@ -32,7 +32,7 @@ extension ItemCategory {
     }
 }
 
-class Item: ObservableObject {
+class Item: ObservableObject, Identifiable {
     var ref = Database.database().reference()
     var name: String
     var category: ItemCategory

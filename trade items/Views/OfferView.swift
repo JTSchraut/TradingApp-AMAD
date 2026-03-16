@@ -11,43 +11,42 @@ import FirebaseAuth
 struct OfferView: View {
     let ref = Database.database().reference()
     
+    @Environment(\.dismiss) private var dismiss
     
-    @State var selectedMyItemID = ""
-    @State var selectedOtherItemID = ""
-    
-    @State var showMyItems = false
-    @State var showOtherItems = false
+    @State var selectedMyItem: Item? = nil
+    @State var selectedOtherItem: Item
     
     @State var alertON = false
+    @State var showMyItems = false
     
     var body: some View {
-        
         NavigationStack {
-            
             VStack() {
-                
-                Text("Create Offer")
+                Text("Offer for \(selectedOtherItem.name)")
                     .font(.largeTitle)
+                
                 HStack {
-                    VStack{
+                    VStack {
                         Text("You Receive")
                             .font(.title2)
-                        
-                        Button {
-                            showOtherItems = true
-                        } label: {
-                            Text(selectedOtherItemID.isEmpty ? "Select Item" : selectedOtherItemID)
-                        }
+                        ItemView(item: selectedOtherItem)
                     }
                     
-                    VStack{
+                    VStack {
                         Text("You Give")
                             .font(.title2)
                         
                         Button {
                             showMyItems = true
                         } label: {
-                            Text(selectedMyItemID.isEmpty ? "Select Item" : selectedMyItemID)
+                            if let myItem = selectedMyItem {
+                                ItemView(item: myItem)
+                            } else {
+                                Text("Select Item")
+                                    .foregroundStyle(.secondary)
+                                    .padding()
+                                    .background(RoundedRectangle(cornerRadius: 10).stroke(.gray))
+                            }
                         }
                     }
                 }
@@ -57,31 +56,30 @@ struct OfferView: View {
                 Button("Send Offer") {
                     SaveOffer()
                 }
+                .disabled(selectedMyItem == nil)
                 
                 Spacer()
             }
             .alert("Offer sent", isPresented: $alertON) {
-                
+                Button("Ok") {
+                    dismiss()
+                }
             }
-            // sheet is like a popup
             .sheet(isPresented: $showMyItems) {
-                SelectItemView(selectedItemId: $selectedMyItemID)
-            }
-            .sheet(isPresented: $showOtherItems) {
-                SelectOtherItemView(selectedItemId: $selectedOtherItemID)
+                SelectItemView(selectedItem: $selectedMyItem)
             }
         }
     }
     
     func SaveOffer(){
-        guard !selectedMyItemID.isEmpty, !selectedOtherItemID.isEmpty else {
+        guard let myItem = selectedMyItem else {
             return
         }
         
         guard let uid = Auth.auth().currentUser?.uid else { return }
         
         let offerRef = ref.child("offers").childByAutoId()
-        let offerData: [String: Any] = ["offerIN": selectedOtherItemID, "offerOut": selectedMyItemID, "fromUID": uid]
+        let offerData: [String: Any] = ["offerIN": selectedOtherItem.key, "offerOut": myItem.key, "fromUID": uid]
         
         offerRef.setValue(offerData)
         alertON = true

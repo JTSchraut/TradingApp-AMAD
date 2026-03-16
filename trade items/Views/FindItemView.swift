@@ -12,24 +12,28 @@ import FirebaseDatabase
 struct FindItemView: View {
     
     let ref = Database.database().reference()
-    @State var testText = "hi"
-    
     @State var items: [Item] = []
+    
+    @State var selectedItem: Item? = nil
     
     var body: some View {
         VStack {
             Text("Other's Listed Items:")
                 .font(.largeTitle)
             
-            Text(testText)
-            
             List(items, id: \.key) { item in
                 ItemView(item: item)
+                    .onTapGesture {
+                        selectedItem = item
+                    }
             }
         }
         .onAppear {
             items.removeAll()
             getItems()
+        }
+        .sheet(item: $selectedItem) { item in
+            OfferView(selectedOtherItem: item)
         }
     }
     
