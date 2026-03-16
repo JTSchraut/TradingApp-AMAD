@@ -10,161 +10,129 @@ import FirebaseAuth
 import FirebaseDatabase
 
 struct SearchView: View {
-    @State var alertON = false
-    @State var searchIN = ""
-    @State var estValIN = 1.0
-    @State var categoryIN = "Sports"
-    @State var allItems: [Item] = []
-    @State var extraSearch = false
-    var body: some View {
-        NavigationStack{
-            
-            Text("Search For Items")
-                .font(.largeTitle)
-            TextField("Search", text: $searchIN)
-                .background {
-                    RoundedRectangle(cornerSize: .zero)
-                        .foregroundStyle(.teal)
-                }
-            Toggle(isOn: $extraSearch) {
-                Text("Extra search parameters:")
-            }
-            Text("Filter by:")
-            HStack{
-                Text("Estimated Value: $\(estValIN, specifier: "%.0f")")
-                Stepper("", value: $estValIN)
-            }
-            Slider(value: $estValIN, in: 1...100, step: 1.0 ) {_ in
-                
-            }
-                
-
-            Text("Select category:")
-                .font(.title2)
-            Text("Current: \(categoryIN)")
-            ScrollView {
-                Button {
-                    categoryIN = "Sports"
-                } label: {
-                    ZStack{
-                        RoundedRectangle(cornerSize: CGSize(width: 10.0, height: 15.0))
-                            .frame(width: 250,height: 35)
-                            .foregroundStyle(.blue)
-                        Text("Sports")
-                            .foregroundStyle(.red)
-                            .font(.title)
-                    }
-                }
-                
-                Button {
-                    categoryIN = "Technology"
-                } label: {
-                    ZStack{
-                        RoundedRectangle(cornerSize: CGSize(width: 10.0, height: 15.0))
-                            .frame(width: 250,height: 35)
-                            .foregroundStyle(.blue)
-                        Text("Technology")
-                            .foregroundStyle(.red)
-                            .font(.title)
-                    }
-                }
-                
-                Button {
-                    categoryIN = "Clothing"
-                } label: {
-                    ZStack{
-                        RoundedRectangle(cornerSize: CGSize(width: 10.0, height: 15.0))
-                            .frame(width: 250,height: 35)
-                            .foregroundStyle(.blue)
-                        Text("Clothing")
-                            .foregroundStyle(.red)
-                            .font(.title)
-                    }
-                }
-            }
-                
-            Spacer()
-            Spacer()
-            Spacer()
-            NavigationLink {
-                FilteredItemsView(items: filter(name: searchIN, category: categoryIN, estVal: estValIN))
-            } label: {
-                ZStack{
-                    Circle()
-                        .frame(width: 150)
-                    Text("Find Items")
-                        .foregroundStyle(.red)
-                        .font(.title2)
-                }
-            }
-            
-            Spacer()
-        }
-        .onAppear() {
-            loadItems()
-        }
-        .alert("Invalid search parameters:", isPresented: $alertON) {
-            
-        }
-    }
     
-    func loadItems() {
-        let ref = Database.database().reference().child("items")
-        guard let email = Auth.auth().currentUser?.email else {
-            return
-        }
-
-        ref.observeSingleEvent(of: .value) { snapshot in
-            allItems = []
-
-            for snap in snapshot.children.allObjects as! [DataSnapshot] {
-                if let dict = snap.value as? [String: Any] {
-                    if dict["email"] as! String == email {
-                        continue
+    @Environment(\.dismiss) private var dismiss
+    
+    @State var alertON = false
+    @Binding var searchIN: String
+    @Binding var estValIN: Double
+    @Binding var categoryIN: ItemCategory?
+    @Binding var useEstimatedValue: Bool
+    @Binding var useCategory: Bool
+    
+    var body: some View {
+        VStack(spacing: 24) {
+            Text("Filter Items")
+                .font(.largeTitle)
+                .bold()
+            
+            
+            VStack(alignment: .leading, spacing: 8) {
+                Text("Item Name")
+                    .font(.headline)
+                    .padding(.horizontal)
+                TextField("Enter name", text: $searchIN)
+                    .textFieldStyle(.roundedBorder)
+                    .padding(.horizontal)
+            }
+            
+            
+            VStack(alignment: .leading, spacing: 8) {
+                if useEstimatedValue {
+                    Button("Disable Estimated Value Search") {
+                        useEstimatedValue = false
+                    }
+                } else {
+                    Button("Enable Estimated Value Search") {
+                        useEstimatedValue = true
+                    }
+                }
+                
+                Text("Estimated value: $\(estValIN, specifier: "%.0f")")
+                    .font(.headline)
+                    .padding(.horizontal)
+                
+                HStack {
+                    Button {
+                        if estValIN > 1 {
+                            estValIN -= 1
+                        }
+                    } label: {
+                        Image(systemName: "minus.rectangle.fill")
+                            .font(.largeTitle)
+                            .foregroundStyle(.red.opacity(0.9))
                     }
                     
-                    let item = Item(dict: dict)
-                    allItems.append(item)
-                    print(allItems)
+                    Slider(value: $estValIN, in: 1...100, step: 1)
+                        .tint(.green)
+                    
+                    Button {
+                        if estValIN < 100 {
+                            estValIN += 1
+                        }
+                    } label: {
+                        Image(systemName: "plus.rectangle.fill")
+                            .font(.largeTitle)
+                            .foregroundStyle(.green.opacity(0.9))
+                    }
                 }
+                .disabled(!useEstimatedValue)
+                .opacity(useEstimatedValue ? 1 : 0.4)
+                .padding(.horizontal)
+            }
+            
+            VStack(alignment: .leading, spacing: 8) {
+                Text("Category")
+                    .font(.headline)
+                    .padding(.horizontal)
+                
+                if useCategory {
+                    Button("Disable Category Search") {
+                        useCategory = false
+                    }
+                } else {
+                    Button("Enable Category Search") {
+                        useCategory = true
+                    }
+                }
+                
+                HStack(spacing: 20) {
+                    ForEach(ItemCategory.allCases, id: \.self) { category in
+                        Button {
+                            categoryIN = category
+                        } label: {
+                            ZStack {
+                                Circle()
+                                    .fill(categoryIN == category ? .blue.opacity(0.9) : .gray.opacity(0.7))
+                                    .frame(width: 100, height: 100)
+                                
+                                Text(category.rawValue)
+                                    .foregroundStyle(.white)
+                                    .font(.title3)
+                                    .multilineTextAlignment(.center)
+                                    .padding(5)
+                            }
+                        }
+                    }
+                }
+                .disabled(!useCategory)
+                .opacity(useCategory ? 1 : 0.4)
+                .padding(.horizontal)
+            }
+            
+            Button {
+                dismiss()
+            } label: {
+                Text("Filter Items")
+                    .font(.title2)
+                    .bold()
+                    .foregroundStyle(.white)
+                    .frame(maxWidth: .infinity, minHeight: 60)
+                    .background(.blue)
+                    .cornerRadius(10)
+                    .padding(.horizontal)
             }
         }
+        .padding(.vertical)
     }
-    func filterName(name: String)->[Item]{
-        var arrayOUT: [Item] = []
-        for item in allItems {
-            if (name == "" || item.name.lowercased().contains(name.lowercased())){
-                arrayOUT.append(item)
-            }
-        }
-        return arrayOUT
-    }
-    
-    
-    func filter(name: String, category: String, estVal: Double) -> [Item] {
-        var arrayOUT: [Item] = []
-        if extraSearch {
-            for item in allItems {
-                if (name == "" || item.name.lowercased().contains(name.lowercased())) &&
-                   category == item.category.rawValue &&
-                   abs(item.estimatedValue - estVal) < 10 {
-                    arrayOUT.append(item)
-                }
-            }
-            return arrayOUT
-        } else {
-            var arrayOUT: [Item] = []
-            for item in allItems {
-                if (name == "" || item.name.lowercased().contains(name.lowercased())){
-                    arrayOUT.append(item)
-                }
-            }
-            return arrayOUT
-        }
-        
-    }
-}
-
-#Preview {
-    SearchView()
 }
