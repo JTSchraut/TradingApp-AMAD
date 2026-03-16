@@ -13,7 +13,6 @@ struct OffersView: View {
     
     let ref = Database.database().reference()
     
-    @State var loaded = false
     @State var offers: [Offer] = []
     
     var body: some View {
@@ -21,11 +20,8 @@ struct OffersView: View {
             Text("Incoming offers")
                 .font(.title)
             
-            List(offers, id: \.offerIN.key) { offer in
-                VStack {
-                    Text("Offer:")
-                        .font(.headline)
-                    
+            List(offers, id: \.id) { offer in
+                VStack(alignment: .leading, spacing: 10) {
                     HStack {
                         VStack {
                             Text("You recieve:")
@@ -42,47 +38,81 @@ struct OffersView: View {
                     
                     HStack {
                         Button("Accept") {
-                            
+                            acceptOffer(offer)
                         }
+                        .buttonStyle(.borderedProminent)
+                        .tint(.green)
                         
                         Spacer()
                         
                         Button("Decline") {
-                            
+                            declineOffer(offer)
                         }
+                        .buttonStyle(.borderedProminent)
+                        .tint(.red)
                     }
                 }
+                .padding()
+                .background(RoundedRectangle(cornerRadius: 20)
+                    .foregroundStyle(.ultraThinMaterial))
+                .shadow(radius: 5)
             }
             .onAppear() {
-                if !loaded {
-                    loadOffers()
-                }
+                offers.removeAll()
+                loadOffers()
             }
         }
     }
     
+    func acceptOffer(_ offer: Offer) {
+        
+        guard let uid = Auth.auth().currentUser?.uid else { return }
+        
+        let inKey = offer.offerIN.key
+        let outKey = offer.offerOUT.key
+        
+        ref.child("items").child(inKey).removeValue()
+        ref.child("items").child(outKey).removeValue()
+        ref.child("users").child(uid).child("items").child(inKey).removeValue()
+        ref.child("users").child(offer.fromUID).child("items").child(outKey).removeValue()
+        
+        ref.child("offers").child(offer.id).removeValue()
+        
+        ref.child("offers").observeSingleEvent(of: .value) { snapshot in
+            for snap in snapshot.children.allObjects as! [DataSnapshot] {
+                if let dict = snap.value as? [String:Any],
+                   let tempInKey = dict["offerIN"] as? String,
+                   let tempOutKey = dict["offerOut"] as? String,
+                   (tempInKey == outKey || tempInKey == inKey || tempOutKey == outKey || tempOutKey == inKey) {
+                    ref.child("offers").child(snap.key).removeValue()
+                    offers.removeAll {$0.id == snap.key}
+                }
+            }
+        }
+        
+        offers.removeAll {$0.id == offer.id}
+    }
+    
+    func declineOffer(_ offer: Offer) {
+        ref.child("offers").child(offer.id).removeValue()
+        offers.removeAll {$0.id == offer.id}
+    }
+    
     func loadOffers() {
-        
-        print("loading")
-        
-        loaded = true
-        
         guard let myEmail = Auth.auth().currentUser?.email else {
-            print("couldnt get email")
             return
         }
         
         ref.child("offers").observe(.childAdded) { snapshot in
             guard let dict = snapshot.value as? [String:Any],
                   let offerIN = dict["offerIN"] as? String,
-                  let offerOUT = dict["offerOut"] as? String else {
-                print("couldnt make starter dict")
+                  let offerOUT = dict["offerOut"] as? String,
+                  let fromUID = dict["fromUID"] as? String else {
                 return
             }
 
             ref.child("items").child(offerIN).observeSingleEvent(of: .value) { snapIN in
                 guard let dictIN = snapIN.value as? [String:Any] else {
-                    print("couldnt make dictIN")
                     return
                 }
 
@@ -90,7 +120,6 @@ struct OffersView: View {
                 itemIN.key = offerIN
 
                 if itemIN.email != myEmail {
-                    print("Did not use email: \(itemIN.email) for \(itemIN.name)")
                     return
                 }
 
@@ -100,7 +129,7 @@ struct OffersView: View {
                     let itemOUT = Item(dict: dictOUT)
                     itemOUT.key = offerOUT
 
-                    let offer = Offer(offerIN: itemIN, offerOUT: itemOUT)
+                    let offer = Offer(offerIN: itemIN, offerOUT: itemOUT, id: snapshot.key, fromUID: fromUID)
 
                     DispatchQueue.main.async {
                         offers.append(offer)
@@ -108,8 +137,6 @@ struct OffersView: View {
                 }
             }
         }
-        
-        print("done loading")
     }
 }
 

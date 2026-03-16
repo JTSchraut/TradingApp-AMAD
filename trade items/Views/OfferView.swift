@@ -77,9 +77,10 @@ struct OfferView: View {
             return
         }
         
-        let offerRef = ref.child("offers").childByAutoId()
+        guard let uid = Auth.auth().currentUser?.uid else { return }
         
-        let offerData: [String: Any] = ["offerIN": selectedOtherItemID, "offerOut": selectedMyItemID]
+        let offerRef = ref.child("offers").childByAutoId()
+        let offerData: [String: Any] = ["offerIN": selectedOtherItemID, "offerOut": selectedMyItemID, "fromUID": uid]
         
         offerRef.setValue(offerData)
         alertON = true
