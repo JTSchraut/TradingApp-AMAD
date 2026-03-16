@@ -14,34 +14,33 @@ struct HomeView: View {
         Auth.auth().currentUser
     }
     @Environment(\.dismiss) private var dismiss
-    @State private var selection: Int = 0
+    @State private var selection: Int = 2
+    @State var incomingOffers = 0
     
     var body: some View {
         TabView(selection: $selection) {
-            Tab("Your items", systemImage: "sharedwithyou", value: 0) {
+            Tab("Outgoing", systemImage: "arrow.up.square.fill", value: 0) {
+                OutgoingOffersView()
+            }
+            
+            Tab("My Items", systemImage: "archivebox", value: 1) {
                 ListedItemsView()
             }
             
-            Tab("Post", systemImage: "document.on.clipboard", value: 1) {
-                ListItemView()
+            Tab("Home", systemImage: "house", value: 2) {
+                WelcomeView()
             }
             
-            Tab("Send Offer", systemImage: "rectangle.portrait.and.arrow.right", value: 2) {
-                OfferView()
-            }
-            
-            Tab("Search", systemImage: "magnifyingglass", value: 3) {
-                SearchView()
-            }
-            
-            Tab("All items", systemImage: "list.clipboard", value: 4) {
+            Tab("Browse", systemImage: "list.bullet.rectangle", value: 3) {
                 FindItemView()
             }
             
-            Tab("Offers", systemImage: "square.and.arrow.down", value: 5) {
+            Tab("Incoming", systemImage: "arrow.down.square.fill", value: 4) {
                 OffersView()
             }
+            .badge(incomingOffers)
         }
+        .toolbarBackground(.ultraThinMaterial, for: .tabBar)
     }
     
     func signOut() {

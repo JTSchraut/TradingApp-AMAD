@@ -27,6 +27,7 @@ struct ListedItemsView: View {
                         .swipeActions {
                             Button("Delete") {
                                 item.delete()
+                                items.removeAll(where: {$0.key == item.key})
                             }
                             .tint(.red)
                         }
@@ -68,18 +69,19 @@ struct ListedItemsView: View {
         let itemsRef = ref.child("users").child(uid).child("items")
         
         itemsRef.observe(.childAdded) { snapshot in
-            guard let itemID = snapshot.value as? String else { return }
+            let itemID = snapshot.key
                 
             ref.child("items").child(itemID).observeSingleEvent(of: .value) { snap in
                 guard let dict = snap.value as? [String: Any] else { return }
-                let item = Item(dict: dict)
+                var item = Item(dict: dict)
                 item.key = itemID
-                items.append(item)
+                if !items.contains(where: {$0.key == itemID}) {
+                    items.append(item)
+                }
             }
         }
         
         itemsRef.observe(.childRemoved) { snapshot in
-            // remove all items where the key == snapshot key
             items.removeAll { $0.key == snapshot.key }
         }
         

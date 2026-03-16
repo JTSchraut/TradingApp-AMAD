@@ -13,8 +13,8 @@ import FirebaseDatabase
 
 
 
-
-enum ItemCategory: String {
+// CaseIterable allows ItemCategory.allCases
+enum ItemCategory: String, Codable, CaseIterable {
     case clothing = "Clothing"
     case technology = "Technology"
     case sports = "Sports"
