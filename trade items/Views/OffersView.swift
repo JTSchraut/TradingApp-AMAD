@@ -23,16 +23,25 @@ struct OffersView: View {
             List(offers, id: \.id) { offer in
                 VStack(alignment: .leading, spacing: 10) {
                     HStack {
+                        
                         VStack {
                             Text("You recieve:")
+                                .font(.headline)
                             ItemView(item: offer.offerOUT)
+                                .frame(width: 120, height: 120)
+                                .background(.ultraThinMaterial)
+                                .cornerRadius(10)
                         }
                         
                         Spacer()
                         
                         VStack {
                             Text("You give:")
+                                .font(.headline)
                             ItemView(item: offer.offerIN)
+                                .frame(width: 120, height: 120)
+                                .background(.ultraThinMaterial)
+                                .cornerRadius(10)
                         }
                     }
                     
@@ -42,6 +51,7 @@ struct OffersView: View {
                         }
                         .buttonStyle(.borderedProminent)
                         .tint(.green)
+                        .frame(maxWidth: .infinity)
                         
                         Spacer()
                         
@@ -50,6 +60,7 @@ struct OffersView: View {
                         }
                         .buttonStyle(.borderedProminent)
                         .tint(.red)
+                        .frame(maxWidth: .infinity)
                     }
                 }
                 .padding()
