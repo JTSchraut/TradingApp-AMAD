@@ -17,41 +17,29 @@ struct HomeView: View {
     @State private var selection: Int = 0
     
     var body: some View {
-        VStack {
-            
-            Text("Welcome back \(user?.email ?? "uh oh")")
-                .font(.largeTitle)
-            // Text("Id: \(user?.uid ?? "uh oh")")
-            Button("sign out") {
-                signOut()
+        TabView(selection: $selection) {
+            Tab("Your items", systemImage: "sharedwithyou", value: 0) {
+                ListedItemsView()
             }
             
-            Spacer()
+            Tab("Post", systemImage: "document.on.clipboard", value: 1) {
+                ListItemView()
+            }
             
-            TabView(selection: $selection) {
-                Tab("Your items", systemImage: "sharedwithyou", value: 0) {
-                    ListedItemsView()
-                }
-                
-                Tab("Post", systemImage: "document.on.clipboard", value: 1) {
-                    ListItemView()
-                }
-                
-                Tab("Send Offer", systemImage: "rectangle.portrait.and.arrow.right", value: 2) {
-                    OfferView()
-                }
-                
-                Tab("Search", systemImage: "magnifyingglass", value: 3) {
-                    SearchView()
-                }
-                
-                Tab("All items", systemImage: "list.clipboard", value: 4) {
-                    FindItemView()
-                }
-                
-                Tab("Offers", systemImage: "square.and.arrow.down", value: 5) {
-                    OffersView()
-                }
+            Tab("Send Offer", systemImage: "rectangle.portrait.and.arrow.right", value: 2) {
+                OfferView()
+            }
+            
+            Tab("Search", systemImage: "magnifyingglass", value: 3) {
+                SearchView()
+            }
+            
+            Tab("All items", systemImage: "list.clipboard", value: 4) {
+                FindItemView()
+            }
+            
+            Tab("Offers", systemImage: "square.and.arrow.down", value: 5) {
+                OffersView()
             }
         }
     }

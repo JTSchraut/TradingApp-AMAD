@@ -13,6 +13,8 @@ struct OffersView: View {
     
     let ref = Database.database().reference()
     
+    var screenWidth: CGFloat = UIScreen.main.bounds.width
+    
     @State var offers: [Offer] = []
     
     var body: some View {
@@ -28,9 +30,6 @@ struct OffersView: View {
                             Text("You recieve:")
                                 .font(.headline)
                             ItemView(item: offer.offerOUT)
-                                .frame(width: 120, height: 120)
-                                .background(.ultraThinMaterial)
-                                .cornerRadius(10)
                         }
                         
                         Spacer()
@@ -39,9 +38,6 @@ struct OffersView: View {
                             Text("You give:")
                                 .font(.headline)
                             ItemView(item: offer.offerIN)
-                                .frame(width: 120, height: 120)
-                                .background(.ultraThinMaterial)
-                                .cornerRadius(10)
                         }
                     }
                     
@@ -64,10 +60,9 @@ struct OffersView: View {
                     }
                 }
                 .padding()
-                .background(RoundedRectangle(cornerRadius: 20)
-                    .foregroundStyle(.ultraThinMaterial))
                 .shadow(radius: 5)
             }
+            .listStyle(.plain)
             .onAppear() {
                 offers.removeAll()
                 loadOffers()

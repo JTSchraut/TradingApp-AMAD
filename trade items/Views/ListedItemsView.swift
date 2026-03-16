@@ -14,10 +14,10 @@ struct ListedItemsView: View {
     let ref = Database.database().reference()
     
     @State var items: [Item] = []
-    @State var loadedFirebase = false
+    @State var showSheet = false
     
     var body: some View {
-        
+        ZStack {
             VStack {
                 Text("Your Listed Items:")
                     .font(.largeTitle)
@@ -33,13 +33,33 @@ struct ListedItemsView: View {
                 }
                 
             }
-        
-        .onAppear {
-            // boolean prevents the observers from being created twice which would cause items to be duplicated
-            if !loadedFirebase {
-                loadedFirebase = true
-                firebaseStuff()
+            
+            VStack {
+                Spacer()
+                HStack {
+                    Spacer()
+                    Button {
+                        showSheet = true
+                    } label: {
+                        Image(systemName: "plus")
+                            .font(.system(size: 50))
+                            .foregroundStyle(.white)
+                            .padding(15)
+                            .background(.blue)
+                            .clipShape(Circle())
+                            .shadow(radius: 5)
+                    }
+                    .padding(.trailing, 35)
+                    .padding(.bottom, 35)
+                }
             }
+        }
+        .sheet(isPresented: $showSheet) {
+            ListItemView()
+        }
+        .onAppear {
+            items.removeAll()
+            firebaseStuff()
         }
     }
     

@@ -21,6 +21,17 @@ enum ItemCategory: String {
     
 }
 
+extension ItemCategory {
+    var imageName: String {
+        switch self {
+        case .clothing: return "tshirt"
+        case .sports: return "soccerball"
+        case .technology: return "tv"
+        default: return "globe"
+        }
+    }
+}
+
 class Item: ObservableObject {
     var ref = Database.database().reference()
     var name: String

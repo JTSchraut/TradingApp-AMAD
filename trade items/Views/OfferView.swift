@@ -11,6 +11,7 @@ import FirebaseAuth
 struct OfferView: View {
     let ref = Database.database().reference()
     
+    
     @State var selectedMyItemID = ""
     @State var selectedOtherItemID = ""
     
