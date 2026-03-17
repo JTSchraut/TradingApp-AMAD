@@ -9,7 +9,7 @@ import SwiftUI
 import FirebaseDatabase
 import FirebaseAuth
 
-struct OutgoingOffersView: View {
+struct OffersInView: View {
     
     let ref = Database.database().reference()
     
@@ -18,7 +18,7 @@ struct OutgoingOffersView: View {
     
     var body: some View {
         NavigationStack {
-            Text("Incoming offers")
+            Text("Outgoing offers")
                 .font(.title)
             
             List(offers, id: \.id) { offer in
@@ -26,7 +26,7 @@ struct OutgoingOffersView: View {
                     HStack {
                         
                         VStack {
-                            Text("You recieve:")
+                            Text("You give:")
                                 .font(.headline)
                             ItemView(item: offer.offerOUT)
                         }
@@ -34,7 +34,7 @@ struct OutgoingOffersView: View {
                         Spacer()
                         
                         VStack {
-                            Text("You give:")
+                            Text("You receive:")
                                 .font(.headline)
                             ItemView(item: offer.offerIN)
                         }
@@ -64,8 +64,8 @@ struct OutgoingOffersView: View {
                 return
             }
 
-            ref.child("items").child(offerOUT).observeSingleEvent(of: .value) { snapIN in
-                guard let dictOUT = snapIN.value as? [String:Any] else {
+            ref.child("items").child(offerOUT).observeSingleEvent(of: .value) { snapOUT in
+                guard let dictOUT = snapOUT.value as? [String:Any] else {
                     return
                 }
 
