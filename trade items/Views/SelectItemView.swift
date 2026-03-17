@@ -14,7 +14,7 @@ struct SelectItemView: View {
     @Environment(\.dismiss) private var dismiss
     let ref = Database.database().reference()
     
-    @Binding var selectedItemId: String
+    @Binding var selectedItem: Item?
     @State var items: [Item] = []
     @State var loadedFirebase = false
     
@@ -27,7 +27,7 @@ struct SelectItemView: View {
                 List(items, id: \.key) { item in
                     ItemView(item: item)
                         .onTapGesture {
-                            selectedItemId = item.key
+                            selectedItem = item
                             dismiss()
                         }
                 }

@@ -13,15 +13,26 @@ import FirebaseDatabase
 
 
 
-
-enum ItemCategory: String {
+// CaseIterable allows ItemCategory.allCases
+enum ItemCategory: String, Codable, CaseIterable {
     case clothing = "Clothing"
     case technology = "Technology"
     case sports = "Sports"
     
 }
 
-class Item: ObservableObject {
+extension ItemCategory {
+    var imageName: String {
+        switch self {
+        case .clothing: return "tshirt"
+        case .sports: return "soccerball"
+        case .technology: return "tv"
+        default: return "globe"
+        }
+    }
+}
+
+class Item: ObservableObject, Identifiable {
     var ref = Database.database().reference()
     var name: String
     var category: ItemCategory
@@ -59,7 +70,7 @@ class Item: ObservableObject {
         let newRef = ref.child("items").childByAutoId()
         key = newRef.key ?? ""
         newRef.setValue(toDict())
-        ref.child("users").child(uid).child("items").childByAutoId().setValue(key)
+        ref.child("users").child(uid).child("items").child(key).setValue(key)
     }
     
     func delete() {

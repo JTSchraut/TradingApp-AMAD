@@ -14,30 +14,50 @@ struct ItemView: View {
     
     var body: some View {
         ZStack {
-            RoundedRectangle(cornerRadius: 20, style: .circular)
-                .frame(width: screenWidth * 0.4, height: screenWidth * 0.4 / 1.618)
-                .foregroundStyle(.gray)
+            RoundedRectangle(cornerRadius: 20, style: .continuous)
+                .fill(.ultraThickMaterial)
+                .shadow(color: .gray.opacity(0.3), radius: 5, x: 0, y: 5)
+                .overlay {
+                    RoundedRectangle(cornerRadius: 20, style: .continuous)
+                        .stroke(Color.gray.opacity(0.2), lineWidth: 1)
+                }
+            
             VStack(alignment: .leading) {
-                Spacer()
+                Spacer(minLength: 2)
+                
                 Text("\(item.name)")
-                        .font(.title)
-                        
-                HStack {
+                    .font(.headline)
+                    .fontWeight(.semibold)
+                    .foregroundStyle(.primary)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.7)
+                
+                Spacer()
+                
+                HStack(spacing: 5) {
+                    Image(systemName: item.category.imageName)
+                        .foregroundStyle(.secondary)
                     Text("\(item.category.rawValue)")
-                        .font(.title2)
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.7)
                         
+                    Spacer()
+                    
                     if item.estimatedValue != 0 {
-                        Spacer()
                         Text("$\(item.estimatedValue, specifier: "%.0f")")
-                            .font(.title2)
-                            
+                            .font(.subheadline)
+                            .foregroundStyle(.green)
+                            .fontWeight(.bold)
                     }
                 }
-                .frame(maxWidth: screenWidth * 0.4, maxHeight: screenWidth * 0.4)
-                Spacer()
+                
+                Spacer(minLength: 2)
             }
-            .frame(maxWidth: screenWidth * 0.4 * 0.8, maxHeight: screenWidth * 0.4 / 1.618 * 3/4)
+            .padding(10)
         }
+        .frame(width: screenWidth * 0.4, height: screenWidth * 0.4 / 1.618)
     }
 }
 
