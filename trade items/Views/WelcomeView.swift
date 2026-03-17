@@ -11,6 +11,7 @@ import FirebaseAuth
 struct WelcomeView: View {
     
     @Environment(\.dismiss) private var dismiss
+    @Binding var isSignedIn: Bool
     
     var body: some View {
         Text("Hello, World!")
@@ -25,12 +26,9 @@ struct WelcomeView: View {
         do {
             try Auth.auth().signOut()
             dismiss()
+            isSignedIn = false
         } catch {
             print("Sign out error: \(error.localizedDescription)")
         }
     }
-}
-
-#Preview {
-    WelcomeView()
 }

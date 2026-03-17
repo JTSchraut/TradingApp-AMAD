@@ -16,6 +16,7 @@ struct HomeView: View {
     @Environment(\.dismiss) private var dismiss
     @State private var selection: Int = 2
     @State var incomingOffers = 0
+    @State var isSignedIn: Bool = true
     
     var body: some View {
         TabView(selection: $selection) {
@@ -28,7 +29,7 @@ struct HomeView: View {
             }
             
             Tab("Home", systemImage: "house", value: 2) {
-                WelcomeView()
+                WelcomeView(isSignedIn: $isSignedIn)
             }
             
             Tab("Browse", systemImage: "list.bullet.rectangle", value: 3) {
@@ -41,6 +42,11 @@ struct HomeView: View {
             .badge(incomingOffers)
         }
         .toolbarBackground(.ultraThinMaterial, for: .tabBar)
+        .onChange(of: isSignedIn) {
+            if !isSignedIn {
+                dismiss()
+            }
+        }
     }
     
     func signOut() {
